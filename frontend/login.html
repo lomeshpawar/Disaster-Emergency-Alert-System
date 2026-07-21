@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Disaster & Emergency Alert System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+
+        /* ============================================================
+           RESET & BASE
+        ============================================================ */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: #0a0a0f;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ============================================================
+           ANIMATED BACKGROUND
+        ============================================================ */
+        .bg-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-gradient {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 20% 20%, rgba(220,38,38,0.18) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 80% at 80% 80%, rgba(124,58,237,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse 100% 100% at 50% 50%, rgba(15,15,30,1) 40%, transparent 100%);
+        }
+
+        /* Floating orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: floatOrb 12s ease-in-out infinite;
+            opacity: 0.35;
+        }
+        .orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, #dc2626, transparent); top: -150px; left: -100px; animation-duration: 14s; }
+        .orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, #7c3aed, transparent); bottom: -100px; right: -80px; animation-duration: 18s; animation-delay: -5s; }
+        .orb-3 { width: 300px; height: 300px; background: radial-gradient(circle, #0ea5e9, transparent); top: 50%; left: 60%; animation-duration: 16s; animation-delay: -8s; opacity: 0.2; }
+
+        @keyframes floatOrb {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33%       { transform: translate(30px, -40px) scale(1.05); }
+            66%       { transform: translate(-20px, 30px) scale(0.95); }
+        }
+
+        /* Grid lines */
+        .bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* Floating particles */
+        .particle {
+            position: absolute;
+            width: 3px; height: 3px;
+            border-radius: 50%;
+            background: rgba(220,38,38,0.7);
+            animation: rise linear infinite;
+        }
+        @keyframes rise {
+            0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+            10%  { opacity: 1; }
+            90%  { opacity: 0.8; }
+            100% { transform: translateY(-20px) scale(1); opacity: 0; }
+        }
+
+        /* ============================================================
+           NAVBAR
+        ============================================================ */
+        nav {
+            position: relative;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 40px;
+            background: rgba(10,10,20,0.6);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .nav-logo-icon {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(220,38,38,0.4);
+        }
+
+        .nav-logo-text {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.3px;
+        }
+
+        .nav-logo-text span { color: #dc2626; }
+
+        .nav-back {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255,255,255,0.5);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .nav-back:hover {
+            color: #fff;
+            border-color: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* ============================================================
+           MAIN LAYOUT
+        ============================================================ */
+        .page-wrapper {
+            flex: 1;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            gap: 60px;
+        }
+
+        /* ---- Left panel (branding) ---- */
+        .brand-panel {
+            flex: 1;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            animation: fadeInLeft 0.8s ease forwards;
+        }
+
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        .brand-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(220,38,38,0.12);
+            border: 1px solid rgba(220,38,38,0.3);
+            border-radius: 50px;
+            color: #f87171;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            width: fit-content;
+        }
+
+        .brand-badge i { animation: blink 1.5s ease-in-out infinite; }
+        @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+
+        .brand-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.15;
+            letter-spacing: -1px;
+        }
+
+        .brand-title span {
+            background: linear-gradient(135deg, #dc2626, #f97316);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-desc {
+            color: rgba(255,255,255,0.45);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .brand-stats {
+            display: flex;
+            gap: 24px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-num {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.35);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-divider {
+            width: 1px;
+            background: rgba(255,255,255,0.08);
+            margin: 0 4px;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: rgba(255,255,255,0.55);
+            font-size: 0.875rem;
+        }
+
+        .feature-icon {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            background: rgba(220,38,38,0.12);
+            border: 1px solid rgba(220,38,38,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f87171;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        /* ---- Right panel (card) ---- */
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(30px);
+            box-shadow:
+                0 0 0 1px rgba(255,255,255,0.04),
+                0 40px 80px rgba(0,0,0,0.6),
+                inset 0 1px 0 rgba(255,255,255,0.07);
+            animation: fadeInRight 0.8s ease forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Card top accent */
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #dc2626, #f97316, transparent);
+        }
+
+        /* ============================================================
+           TABS
+        ============================================================ */
+        .card-header {
+            margin-bottom: 30px;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .card-subtitle {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.35);
+        }
+
+        .tab-group {
+            display: flex;
+            gap: 4px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 14px;
+            padding: 5px;
+            margin-bottom: 28px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px 8px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.25s ease;
+            background: transparent;
+            color: rgba(255,255,255,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            letter-spacing: 0.2px;
+        }
+
+        .tab-btn i { font-size: 0.75rem; }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(220,38,38,0.35);
+        }
+
+        .tab-btn:not(.active):hover {
+            background: rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* ============================================================
+           FORMS
+        ============================================================ */
+        .form-section { display: none; }
+        .form-section.active {
+            display: block;
+            animation: formFadeIn 0.3s ease;
+        }
+
+        @keyframes formFadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-role-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 22px;
+            font-size: 0.83rem;
+            font-weight: 600;
+        }
+
+        .form-role-badge.user-badge {
+            background: rgba(14,165,233,0.1);
+            border: 1px solid rgba(14,165,233,0.2);
+            color: #38bdf8;
+        }
+
+        .form-role-badge.admin-badge {
+            background: rgba(245,158,11,0.1);
+            border: 1px solid rgba(245,158,11,0.2);
+            color: #fbbf24;
+        }
+
+        .form-role-badge.register-badge {
+            background: rgba(34,197,94,0.1);
+            border: 1px solid rgba(34,197,94,0.2);
+            color: #4ade80;
+        }
+
+        /* Input fields */
+        .field {
+            margin-bottom: 16px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap .field-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.25);
+            font-size: 0.85rem;
+            pointer-events: none;
+            transition: color 0.3s;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 13px 14px 13px 40px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.25s ease;
+            outline: none;
+        }
+
+        .input-wrap input::placeholder { color: rgba(255,255,255,0.18); }
+
+        .input-wrap input:focus {
+            border-color: rgba(220,38,38,0.6);
+            background: rgba(220,38,38,0.06);
+            box-shadow: 0 0 0 3px rgba(220,38,38,0.1);
+        }
+
+        .input-wrap input:focus + .field-icon,
+        .input-wrap:focus-within .field-icon { color: #f87171; }
+
+        /* Reorder icons to be before input for z-index */
+        .input-wrap { display: flex; flex-direction: column; position: relative; }
+        .input-wrap input { order: 1; }
+        .input-wrap .field-icon { order: 0; position: absolute; }
+
+        /* Toggle password visibility */
+        .toggle-pw {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.25);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: color 0.3s;
+            z-index: 2;
+        }
+        .toggle-pw:hover { color: rgba(255,255,255,0.6); }
+
+        /* Submit button */
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            margin-top: 8px;
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-submit::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+            opacity: 0;
+            transition: opacity 0.25s;
+        }
+
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(220,38,38,0.45); }
+        .btn-submit:hover::after { opacity: 1; }
+        .btn-submit:active { transform: translateY(0); }
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        /* Spinner */
+        .btn-spinner {
+            width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ============================================================
+           MESSAGES
+        ============================================================ */
+        .msg-box {
+            display: none;
+            margin-top: 14px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .msg-box.show { display: flex; animation: formFadeIn 0.3s ease; }
+
+        .msg-box.success {
+            background: rgba(34,197,94,0.1);
+            border: 1px solid rgba(34,197,94,0.25);
+            color: #4ade80;
+        }
+
+        .msg-box.error {
+            background: rgba(220,38,38,0.1);
+            border: 1px solid rgba(220,38,38,0.25);
+            color: #f87171;
+        }
+
+        /* ============================================================
+           CREDENTIALS HINT
+        ============================================================ */
+        .creds-hint {
+            margin-top: 18px;
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+        }
+
+        .creds-hint-title {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.25);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 10px;
+        }
+
+        .creds-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 0;
+        }
+
+        .creds-row:not(:last-child) {
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .creds-label {
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.3);
+        }
+
+        .creds-value {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.6);
+            font-family: 'Courier New', monospace;
+            background: rgba(255,255,255,0.06);
+            padding: 2px 8px;
+            border-radius: 5px;
+        }
+
+        /* ============================================================
+           DIVIDER
+        ============================================================ */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 18px 0;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.06);
+        }
+
+        .divider-text {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.2);
+            font-weight: 500;
+        }
+
+        /* ============================================================
+           FOOTER
+        ============================================================ */
+        footer {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.04);
+            color: rgba(255,255,255,0.2);
+            font-size: 0.78rem;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+        ============================================================ */
+        @media (max-width: 900px) {
+            .brand-panel { display: none; }
+            .page-wrapper { justify-content: center; }
+        }
+
+        @media (max-width: 480px) {
+            .login-card { padding: 28px 22px; border-radius: 18px; }
+            nav { padding: 14px 20px; }
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- ===== BACKGROUND ===== -->
+<div class="bg-canvas">
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <!-- Particles generated by JS -->
+</div>
+
+<!-- ===== NAVBAR ===== -->
+<nav>
+    <a href="index.html" class="nav-logo">
+        <div class="nav-logo-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <span class="nav-logo-text">Disaster <span>Alert</span> System</span>
+    </a>
+    <a href="index.html" class="nav-back">
+        <i class="fa-solid fa-arrow-left"></i> Back to Home
+    </a>
+</nav>
+
+<!-- ===== MAIN ===== -->
+<div class="page-wrapper">
+
+    <!-- LEFT BRAND PANEL -->
+    <div class="brand-panel">
+        <div class="brand-badge">
+            <i class="fa-solid fa-circle" style="font-size:0.5rem"></i>
+            Live Emergency System
+        </div>
+
+        <h1 class="brand-title">
+            Stay Safe.<br>
+            Stay <span>Informed.</span>
+        </h1>
+
+        <p class="brand-desc">
+            Access real-time disaster alerts, manage emergency notifications, and keep your community safe with our centralized alert management platform.
+        </p>
+
+        <div class="brand-stats">
+            <div class="stat-item">
+                <div class="stat-num">24/7</div>
+                <div class="stat-label">Monitoring</div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <div class="stat-num">150+</div>
+                <div class="stat-label">Citizens</div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <div class="stat-num">5</div>
+                <div class="stat-label">Alert Types</div>
+            </div>
+        </div>
+
+        <div class="feature-list">
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fa-solid fa-bolt"></i></div>
+                Real-time disaster alert publishing
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fa-solid fa-users"></i></div>
+                Role-based access for admins & citizens
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fa-solid fa-database"></i></div>
+                Powered by Spring Boot & MySQL
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fa-solid fa-lock"></i></div>
+                Secure login with session management
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT LOGIN CARD -->
+    <div class="login-card">
+
+        <div class="card-header">
+            <div class="card-title">Welcome Back 👋</div>
+            <div class="card-subtitle">Sign in to your account or create a new one</div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tab-group">
+            <button class="tab-btn active" id="tabUser" onclick="switchTab('User')">
+                <i class="fa-solid fa-user"></i> User
+            </button>
+            <button class="tab-btn" id="tabAdmin" onclick="switchTab('Admin')">
+                <i class="fa-solid fa-user-shield"></i> Admin
+            </button>
+            <button class="tab-btn" id="tabRegister" onclick="switchTab('Register')">
+                <i class="fa-solid fa-user-plus"></i> Register
+            </button>
+        </div>
+
+        <!-- ===== USER LOGIN ===== -->
+        <div class="form-section active" id="sectionUser">
+            <div class="form-role-badge user-badge">
+                <i class="fa-solid fa-user-circle"></i>
+                Citizen / Public User Login
+            </div>
+
+            <div class="field">
+                <label>Username</label>
+                <div class="input-wrap">
+                    <i class="fa-solid fa-user field-icon"></i>
+                    <input type="text" id="userUsername" placeholder="Enter your username" autocomplete="username">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Password</label>
+                <div class="input-wrap">
+                    <i class="fa-solid fa-lock field-icon"></i>
+                    <input type="password" id="userPassword" placeholder="Enter your password" autocomplete="current-password">
+                    <span class="toggle-pw" onclick="togglePw('userPassword', this)"><i class="fa-solid fa-eye"></i></span>
+                </div>
+            </div>
+
+            <button class="btn-submit" id="btnUserLogin" onclick="doLogin('user')">
+                <i class="fa-solid fa-right-to-bracket"></i>
+                Sign In as User
+            </button>
+
+            <div class="msg-box" id="userMsg"></div>
+
+            <div class="creds-hint">
+                <div class="creds-hint-title"><i class="fa-solid fa-circle-info"></i> &nbsp;Default Credentials</div>
+                <div class="creds-row">
+                    <span class="creds-label">Username</span>
+                    <span class="creds-value">user</span>
+                </div>
+                <div class="creds-row">
+                    <span class="creds-label">Password</span>
+                    <span class="creds-value">user123</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== ADMIN LOGIN ===== -->
+        <div class="form-section" id="sectionAdmin">
+            <div class="form-role-badge admin-badge">
+                <i class="fa-solid fa-shield-halved"></i>
+                Administrator Login — Restricted Access
+            </div>
+
+            <div class="field">
+                <label>Admin Username</label>
+                <div class="input-wrap">
+                    <i class="fa-solid fa-user-tie field-icon"></i>
+                    <input type="text" id="adminUsername" placeholder="Enter admin username" autocomplete="username">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Admin Password</label>
+                <div class="input-wrap">
+                    <i class="fa-solid fa-lock field-icon"></i>
+                    <input type="password" id="adminPassword" placeholder="Enter admin password" autocomplete="current-password">
+                    <span class="toggle-pw" onclick="togglePw('adminPassword', this)"><i class="fa-solid fa-eye"></i></span>
+                </div>
+            </div>
+
+            <button class="btn-submit" id="btnAdminLogin" onclick="doLogin('admin')">
+                <i class="fa-solid fa-user-shield"></i>
+                Sign In as Admin
+            </button>
+
+            <div class="msg-box" id="adminMsg"></div>
+
+            <div class="creds-hint">
+                <div class="creds-hint-title"><i class="fa-solid fa-circle-info"></i> &nbsp;Default Credentials</div>
+                <div class="creds-row">
+                    <span class="creds-label">Username</span>
+                    <span class="creds-value">admin</span>
+                </div>
+                <div class="creds-row">
+                    <span class="creds-label">Password</span>
+                    <span class="creds-value">admin123</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== REGISTER ===== -->
+        <div class="form-section" id="sectionRegister">
+            <div class="form-role-badge register-badge">
+                <i class="fa-solid fa-user-plus"></i>
+                Create a New Citizen Account
+            </div>
+
+            <div class="field">
+                <label>Choose Username</label>
+                <div class="input-wrap">
+                    <i class="fa-solid fa-user field-icon"></i>
+                    <input type="text" id="regUsername" placeholder="Pick a unique username">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Password</label>
+                <div class="input-wrap">
+                    <i class="fa-solid fa-lock field-icon"></i>
+                    <input type="password" id="regPassword" placeholder="Create a password">
+                    <span class="toggle-pw" onclick="togglePw('regPassword', this)"><i class="fa-solid fa-eye"></i></span>
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Confirm Password</label>
+                <div class="input-wrap">
+                    <i class="fa-solid fa-lock field-icon"></i>
+                    <input type="password" id="regConfirm" placeholder="Re-enter your password">
+                    <span class="toggle-pw" onclick="togglePw('regConfirm', this)"><i class="fa-solid fa-eye"></i></span>
+                </div>
+            </div>
+
+            <button class="btn-submit" id="btnRegister" onclick="doRegister()">
+                <i class="fa-solid fa-user-plus"></i>
+                Create Account
+            </button>
+
+            <div class="msg-box" id="registerMsg"></div>
+
+            <div class="divider">
+                <div class="divider-line"></div>
+                <div class="divider-text">Already have an account?</div>
+                <div class="divider-line"></div>
+            </div>
+
+            <button class="btn-submit" onclick="switchTab('User')" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);box-shadow:none;">
+                <i class="fa-solid fa-right-to-bracket"></i> Sign In Instead
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>© 2026 Disaster &amp; Emergency Alert System &nbsp;|&nbsp; MCA OJT Internship Project</footer>
+
+<script>
+    const API = 'http://localhost:8081';
+
+    /* ---- Generate floating particles ---- */
+    (function spawnParticles() {
+        const canvas = document.querySelector('.bg-canvas');
+        for (let i = 0; i < 22; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.cssText = `
+                left: ${Math.random() * 100}%;
+                width: ${Math.random() * 3 + 1}px;
+                height: ${Math.random() * 3 + 1}px;
+                animation-duration: ${Math.random() * 12 + 8}s;
+                animation-delay: ${Math.random() * 10}s;
+                opacity: ${Math.random() * 0.6 + 0.2};
+                background: ${Math.random() > 0.5 ? 'rgba(220,38,38,0.8)' : 'rgba(124,58,237,0.6)'};
+            `;
+            canvas.appendChild(p);
+        }
+    })();
+
+    /* ---- Toggle tab ---- */
+    function switchTab(name) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+        document.getElementById('tab' + name).classList.add('active');
+        document.getElementById('section' + name).classList.add('active');
+    }
+
+    /* ---- Toggle password visibility ---- */
+    function togglePw(inputId, icon) {
+        const input = document.getElementById(inputId);
+        const isText = input.type === 'text';
+        input.type = isText ? 'password' : 'text';
+        icon.innerHTML = isText ? '<i class="fa-solid fa-eye"></i>' : '<i class="fa-solid fa-eye-slash"></i>';
+    }
+
+    /* ---- Show message ---- */
+    function showMsg(id, text, type) {
+        const el = document.getElementById(id);
+        el.className = 'msg-box show ' + type;
+        const icon = type === 'success' ? 'circle-check' : 'circle-xmark';
+        el.innerHTML = `<i class="fa-solid fa-${icon}"></i><span>${text}</span>`;
+    }
+
+    function hideMsg(id) {
+        document.getElementById(id).className = 'msg-box';
+    }
+
+    /* ---- Set button loading ---- */
+    function setLoading(btnId, loading, label, icon) {
+        const btn = document.getElementById(btnId);
+        btn.disabled = loading;
+        btn.innerHTML = loading
+            ? '<div class="btn-spinner"></div> Please wait...'
+            : `<i class="fa-solid fa-${icon}"></i> ${label}`;
+    }
+
+    /* ---- Login ---- */
+    async function doLogin(type) {
+        const isAdmin  = type === 'admin';
+        const uId      = isAdmin ? 'adminUsername' : 'userUsername';
+        const pId      = isAdmin ? 'adminPassword' : 'userPassword';
+        const msgId    = isAdmin ? 'adminMsg'      : 'userMsg';
+        const btnId    = isAdmin ? 'btnAdminLogin' : 'btnUserLogin';
+        const btnLabel = isAdmin ? 'Sign In as Admin' : 'Sign In as User';
+        const btnIcon  = isAdmin ? 'user-shield' : 'right-to-bracket';
+
+        const username = document.getElementById(uId).value.trim();
+        const password = document.getElementById(pId).value.trim();
+
+        hideMsg(msgId);
+
+        if (!username || !password) {
+            showMsg(msgId, 'Please fill in all fields.', 'error');
+            return;
+        }
+
+        setLoading(btnId, true, btnLabel, btnIcon);
+
+        try {
+            const res  = await fetch(`${API}/auth/login`, {
+                method : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body   : JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                if (isAdmin && data.role !== 'ADMIN') {
+                    showMsg(msgId, 'Access denied. This account is not an admin.', 'error');
+                    setLoading(btnId, false, btnLabel, btnIcon);
+                    return;
+                }
+                if (!isAdmin && data.role !== 'USER') {
+                    showMsg(msgId, 'Please use the Admin tab to login as admin.', 'error');
+                    setLoading(btnId, false, btnLabel, btnIcon);
+                    return;
+                }
+
+                localStorage.setItem('loggedIn', 'true');
+                localStorage.setItem('username', data.username);
+                localStorage.setItem('role', data.role);
+
+                showMsg(msgId, `Welcome back, ${data.username}! Redirecting...`, 'success');
+
+                setTimeout(() => {
+                    window.location.href = data.role === 'ADMIN' ? 'admin.html' : 'index.html';
+                }, 1200);
+
+            } else {
+                showMsg(msgId, data.message || 'Invalid username or password.', 'error');
+                setLoading(btnId, false, btnLabel, btnIcon);
+            }
+        } catch {
+            showMsg(msgId, 'Cannot connect to server. Make sure backend is running on port 8081.', 'error');
+            setLoading(btnId, false, btnLabel, btnIcon);
+        }
+    }
+
+    /* ---- Register ---- */
+    async function doRegister() {
+        const username = document.getElementById('regUsername').value.trim();
+        const password = document.getElementById('regPassword').value.trim();
+        const confirm  = document.getElementById('regConfirm').value.trim();
+
+        hideMsg('registerMsg');
+
+        if (!username || !password || !confirm) {
+            showMsg('registerMsg', 'Please fill in all fields.', 'error'); return;
+        }
+        if (password !== confirm) {
+            showMsg('registerMsg', 'Passwords do not match.', 'error'); return;
+        }
+        if (password.length < 4) {
+            showMsg('registerMsg', 'Password must be at least 4 characters long.', 'error'); return;
+        }
+
+        setLoading('btnRegister', true, 'Create Account', 'user-plus');
+
+        try {
+            const res  = await fetch(`${API}/auth/register`, {
+                method : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body   : JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                showMsg('registerMsg', data.message, 'success');
+                document.getElementById('regUsername').value = '';
+                document.getElementById('regPassword').value = '';
+                document.getElementById('regConfirm').value  = '';
+                setTimeout(() => switchTab('User'), 2000);
+            } else {
+                showMsg('registerMsg', data.message, 'error');
+            }
+        } catch {
+            showMsg('registerMsg', 'Server error. Make sure backend is running.', 'error');
+        }
+
+        setLoading('btnRegister', false, 'Create Account', 'user-plus');
+    }
+
+    /* ---- Enter key submit ---- */
+    document.addEventListener('keydown', e => {
+        if (e.key !== 'Enter') return;
+        const active = document.querySelector('.form-section.active')?.id;
+        if (active === 'sectionUser')     doLogin('user');
+        if (active === 'sectionAdmin')    doLogin('admin');
+        if (active === 'sectionRegister') doRegister();
+    });
+</script>
+
+</body>
+</html>

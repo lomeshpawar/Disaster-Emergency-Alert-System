@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Emergency | Disaster Alert System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<nav>
+    <div class="logo">
+        <h2>
+            <i class="fa-solid fa-shield-halved"></i>
+            Disaster Alert System
+        </h2>
+    </div>
+    <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="alerts.html">Alerts</a>
+        <a href="report.html" class="active">Report</a>
+        <a href="safety.html">Safety Tips</a>
+        <a href="admin.html">Admin</a>
+    </div>
+</nav>
+
+<!-- ================= HEADER SECTION ================= -->
+<section class="admin-header">
+    <div class="admin-overlay">
+        <h1>Report an Emergency</h1>
+        <p>
+            Help save lives. Report any disaster, fire, flood, or critical situation in your area instantly to the rescue authorities.
+        </p>
+    </div>
+</section>
+
+<!-- ================= REPORT FORM ================= -->
+<section class="admin-panel">
+    <div class="admin-form-container">
+        <div class="section-title">
+            <h2>Emergency Report Form</h2>
+            <p>Please provide accurate details to help dispatch immediate assistance.</p>
+        </div>
+
+        <form id="reportForm">
+            <div class="input-box">
+                <label for="reportName">
+                    <i class="fa-solid fa-user"></i>
+                    Your Name / Contact Person
+                </label>
+                <input type="text" id="reportName" placeholder="Enter your name" required>
+            </div>
+
+            <div class="input-box">
+                <label for="reportMessage">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    Emergency Details / Situation Description
+                </label>
+                <textarea id="reportMessage" placeholder="Describe the situation, location, and severity of the emergency..." required></textarea>
+            </div>
+
+            <button type="submit">
+                <i class="fa-solid fa-paper-plane"></i>
+                Submit Emergency Report
+            </button>
+        </form>
+    </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+    <p>
+        © 2026 Disaster & Emergency Alert System |
+        MCA OJT Internship Project
+    </p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

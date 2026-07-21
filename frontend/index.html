@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Disaster & Emergency Alert System</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+
+<nav>
+
+    <div class="logo">
+
+        <h2>
+            <i class="fa-solid fa-shield-halved"></i>
+            Disaster Alert System
+        </h2>
+
+    </div>
+
+    <div class="nav-links">
+
+        <a href="index.html" class="active">Home</a>
+        <a href="alerts.html">Alerts</a>
+        <a href="report.html">Report</a>
+        <a href="safety.html">Safety Tips</a>
+        <a href="admin.html" id="adminNavLink" style="display:none">Admin</a>
+        <span id="navUserInfo" style="color:rgba(255,255,255,0.8);font-size:0.9rem;display:none">
+            <i class="fa-solid fa-user"></i> <span id="navUsername"></span>
+        </span>
+        <a href="login.html" id="navLoginBtn"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+        <a href="#" id="navLogoutBtn" onclick="doLogout()" style="display:none;color:#e74c3c">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </a>
+
+    </div>
+
+</nav>
+
+
+<!-- ================= HERO SECTION ================= -->
+
+<section class="hero">
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+
+        <span class="hero-badge">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            Real-Time Emergency Monitoring
+        </span>
+
+        <h1>
+            Disaster & Emergency
+            Alert System
+        </h1>
+
+        <p>
+            Stay informed with real-time disaster alerts,
+            emergency notifications, and public safety updates
+            to protect communities during critical situations.
+        </p>
+
+        <div class="hero-buttons">
+
+            <button class="primary-btn"
+            onclick="showPopup()">
+
+                <i class="fa-solid fa-bell"></i>
+                Activate Alerts
+
+            </button>
+
+            <button class="secondary-btn">
+
+                <i class="fa-solid fa-circle-info"></i>
+                Learn More
+
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= FEATURES SECTION ================= -->
+
+<section class="cards">
+
+    <div class="card">
+
+        <i class="fa-solid fa-house-flood-water"></i>
+
+        <h3>Flood Monitoring</h3>
+
+        <p>
+            Get instant flood warnings and rainfall updates
+            for high-risk areas.
+        </p>
+
+    </div>
+
+    <div class="card">
+
+        <i class="fa-solid fa-fire"></i>
+
+        <h3>Fire Emergency</h3>
+
+        <p>
+            Receive emergency fire alerts and quick
+            evacuation safety instructions.
+        </p>
+
+    </div>
+
+    <div class="card">
+
+        <i class="fa-solid fa-earth-asia"></i>
+
+        <h3>Earthquake Alerts</h3>
+
+        <p>
+            Stay updated with earthquake warnings and
+            disaster preparedness guidance.
+        </p>
+
+    </div>
+
+    <div class="card">
+
+        <i class="fa-solid fa-hospital"></i>
+
+        <h3>Medical Support</h3>
+
+        <p>
+            Access emergency medical support information
+            and nearby healthcare services.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- ================= LIVE ALERT SECTION ================= -->
+
+<section class="recent-alerts">
+
+    <div class="section-title">
+
+        <h2>Latest Emergency Alerts</h2>
+
+        <p>
+            Real-time notifications issued by emergency authorities.
+        </p>
+
+    </div>
+
+    <div id="homeAlertsList">
+        <p style="text-align: center; color: #666;">Loading alerts...</p>
+    </div>
+
+</section>
+
+
+<!-- ================= SAFETY SECTION ================= -->
+
+<section class="tips">
+
+    <div class="section-title">
+
+        <h2>Emergency Safety Guidelines</h2>
+
+        <p>
+            Follow these important safety instructions during emergencies.
+        </p>
+
+    </div>
+
+    <div class="tip">
+
+        <h3>
+            <i class="fa-solid fa-water"></i>
+            Flood Safety
+        </h3>
+
+        <p>
+            Move to higher ground immediately and avoid crossing flooded roads.
+        </p>
+
+    </div>
+
+    <div class="tip">
+
+        <h3>
+            <i class="fa-solid fa-fire"></i>
+            Fire Safety
+        </h3>
+
+        <p>
+            Use emergency exits calmly and stay away from smoke-filled areas.
+        </p>
+
+    </div>
+
+    <div class="tip">
+
+        <h3>
+            <i class="fa-solid fa-house-crack"></i>
+            Earthquake Safety
+        </h3>
+
+        <p>
+            Take shelter under sturdy furniture and stay away from windows.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- ================= HELPLINE SECTION ================= -->
+
+<section class="helpline">
+
+    <h2>Emergency Helpline Numbers</h2>
+
+    <p>
+        <i class="fa-solid fa-phone"></i>
+        Police Emergency : 100
+    </p>
+
+    <p>
+        <i class="fa-solid fa-truck-medical"></i>
+        Ambulance Service : 108
+    </p>
+
+    <p>
+        <i class="fa-solid fa-fire-extinguisher"></i>
+        Fire Brigade : 101
+    </p>
+
+</section>
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+    <p>
+        © 2026 Disaster & Emergency Alert System |
+        MCA OJT Internship Project
+    </p>
+
+</footer>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script src="script.js"></script>
+<script>
+    // Update navbar based on login state
+    (function() {
+        const role     = localStorage.getItem('role');
+        const username = localStorage.getItem('username');
+        const loggedIn = localStorage.getItem('loggedIn');
+        if (loggedIn) {
+            document.getElementById('navLoginBtn').style.display  = 'none';
+            document.getElementById('navLogoutBtn').style.display = 'inline';
+            document.getElementById('navUserInfo').style.display  = 'inline';
+            document.getElementById('navUsername').textContent     = username;
+            if (role === 'ADMIN') document.getElementById('adminNavLink').style.display = 'inline';
+        }
+    })();
+    function doLogout() {
+        localStorage.clear();
+        window.location.href = 'login.html';
+    }
+</script>
+
+</body>
+</html>
