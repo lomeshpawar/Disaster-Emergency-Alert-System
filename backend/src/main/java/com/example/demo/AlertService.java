@@ -22,6 +22,9 @@ public class AlertService {
     }
 
     public void deleteAlert(Long id) {
+        if (!alertRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Alert not found with id: " + id);
+        }
         alertRepository.deleteById(id);
     }
 }
