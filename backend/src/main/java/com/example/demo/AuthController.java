@@ -1,6 +1,8 @@
 package com.example.demo;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -12,65 +14,64 @@ import java.util.Optional;
 public class AuthController {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public AuthController(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    // -------- POST /auth/login --------
-    // Accepts: { "username": "admin", "password": "1234" }
-    // Returns: { "success": true, "role": "ADMIN", "username": "admin" }
+    // POST /auth/login
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody Map<String, String> credentials) {
-
         Map<String, Object> response = new HashMap<>();
 
         String username = credentials.get("username");
         String password = credentials.get("password");
 
-        // Find user in database by username
-        Optional<User> userOpt = userRepository.findByUsername(username);
-
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-
-            // Check if password matches (simple plain text check)
-            if (user.getPassword().equals(password)) {
-                response.put("success", true);
-                response.put("role", user.getRole());
-                response.put("username", user.getUsername());
-                return response;
-            }
+        if (username == null || password == null) {
+            response.put("success", false);
+            response.put("message", "Username and password are required");
+            return response;
         }
 
-        // Login failed
+        Optional<User> userOpt = userRepository.findByUsername(username);
+
+        if (userOpt.isPresent() && passwordEncoder.matches(password, userOpt.get().getPassword())) {
+            User user = userOpt.get();
+            response.put("success", true);
+            response.put("role", user.getRole());
+            response.put("username", user.getUsername());
+            return response;
+        }
+
         response.put("success", false);
         response.put("message", "Invalid username or password");
         return response;
     }
 
-    // -------- POST /auth/register --------
-    // Registers a new USER (not admin - admin is pre-created)
-    // Accepts: { "username": "john", "password": "1234" }
+    // POST /auth/register
     @PostMapping("/register")
     public Map<String, Object> register(@RequestBody Map<String, String> data) {
-
         Map<String, Object> response = new HashMap<>();
 
         String username = data.get("username");
         String password = data.get("password");
 
-        // Check if username already exists
+        if (username == null || username.isBlank() || password == null || password.isBlank()) {
+            response.put("success", false);
+            response.put("message", "Username and password are required");
+            return response;
+        }
+
         if (userRepository.findByUsername(username).isPresent()) {
             response.put("success", false);
             response.put("message", "Username already exists. Please choose another.");
             return response;
         }
 
-        // Create new user with role USER
         User newUser = new User();
         newUser.setUsername(username);
-        newUser.setPassword(password);
+        newUser.setPassword(passwordEncoder.encode(password));
         newUser.setRole("USER");
 
         userRepository.save(newUser);
