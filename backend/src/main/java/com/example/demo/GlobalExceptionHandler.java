@@ -19,22 +19,28 @@ public class GlobalExceptionHandler {
         exception.getBindingResult().getFieldErrors()
                 .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", HttpStatus.BAD_REQUEST.value());
-        response.put("error", "Validation failed");
-        response.put("errors", errors);
+        return buildResponse(HttpStatus.BAD_REQUEST, "Validation failed", errors);
+    }
 
-        return ResponseEntity.badRequest().body(response);
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException exception) {
+        return buildResponse(HttpStatus.NOT_FOUND, exception.getMessage(), null);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleUnexpectedException(Exception exception) {
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", null);
+    }
+
+    private ResponseEntity<Map<String, Object>> buildResponse(
+            HttpStatus status, String message, Object details) {
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("timestamp", LocalDateTime.now());
-        response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        response.put("error", "Internal server error");
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        response.put("status", status.value());
+        response.put("error", message);
+        if (details != null) {
+            response.put("errors", details);
+        }
+        return ResponseEntity.status(status).body(response);
     }
 }
