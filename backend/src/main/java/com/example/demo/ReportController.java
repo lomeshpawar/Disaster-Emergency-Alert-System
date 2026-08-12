@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,11 +23,13 @@ public class ReportController {
     }
 
     @PostMapping
-    public Report submitReport(@RequestBody Report report) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public Report submitReport(@Valid @RequestBody Report report) {
         return reportService.createReport(report);
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReport(@PathVariable Long id) {
         reportService.deleteReport(id);
     }
