@@ -1,46 +1,54 @@
 # Disaster & Emergency Alert System
 
-A full-stack disaster reporting and emergency alert application built with **Java 17, Spring Boot, Spring Data JPA, MySQL, HTML, CSS, and JavaScript**. The system provides APIs and a browser-based interface for viewing alerts, submitting disaster reports, and managing alert/report data.
+A full-stack disaster reporting and emergency alert application built with **Java 17, Spring Boot, Spring Data JPA, MySQL, HTML, CSS, and JavaScript**. The system provides REST APIs and a responsive browser-based interface for viewing emergency alerts, submitting disaster reports, and managing alert/report data.
 
-## Project Overview
+## Live Demo
 
-The application is designed around a simple emergency-information workflow:
+- **Frontend:** https://disaster-frontend-production.up.railway.app
+- **Backend API:** https://disaster-backend-production-1250.up.railway.app
 
-- Users can register and log in.
-- Users can view emergency alerts.
-- Users can submit disaster reports.
-- Admin-oriented pages can manage alerts and reports through the backend APIs.
-- Data is persisted in MySQL through Spring Data JPA.
+The application is deployed on Railway with separate frontend and backend services.
 
-## Key Features
+## Features
 
 - User registration and login APIs
-- BCrypt password hashing for newly registered and environment-seeded users
-- Disaster alert listing, creation, and deletion APIs
-- Emergency report submission, listing, and deletion APIs
-- MySQL persistence using Spring Data JPA
-- Browser-based frontend with user, alert, report, safety, login, and admin pages
-- Configurable database connection and server port through environment variables
+- BCrypt password hashing
+- Emergency alert listing, creation, and deletion
+- Disaster report submission, listing, and deletion
+- Admin-oriented alert and report management pages
+- MySQL persistence with Spring Data JPA
+- Responsive browser-based frontend
+- Environment-based database and server configuration
+- Automated backend build verification with GitHub Actions
 
 ## Technology Stack
 
 ### Backend
+
 - Java 17
 - Spring Boot 3.2.5
 - Spring Web
 - Spring Data JPA
-- Hibernate/JPA
+- Hibernate / JPA
 - Maven
 - BCrypt password hashing via Spring Security Crypto
 
 ### Database
+
 - MySQL
 - SQL schema provided in `database.sql`
 
 ### Frontend
+
 - HTML5
 - CSS3
 - JavaScript
+
+### DevOps
+
+- Git & GitHub
+- GitHub Actions
+- Railway
 
 ## Project Structure
 
@@ -85,7 +93,7 @@ Disaster-Emergency-Alert-System/
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| POST | `/auth/register` | Register a USER account |
+| POST | `/auth/register` | Register a user account |
 | POST | `/auth/login` | Authenticate a user |
 
 ### Alerts
@@ -106,19 +114,19 @@ Disaster-Emergency-Alert-System/
 
 ## Database
 
-The project uses a MySQL database named `disasterdb` by default. The repository includes `database.sql` with the alert and report table definitions.
+The project uses MySQL. The repository includes `database.sql` with the core alert and report table definitions.
 
-Create the database before starting the application:
+For local development, create the database before starting the application:
 
 ```sql
 CREATE DATABASE disasterdb;
 ```
 
-Then run the SQL in `database.sql` if you want to create the tables manually. JPA is also configured with `ddl-auto=update`.
+JPA is configured with `ddl-auto=update`, so required tables can also be created or updated automatically during application startup.
 
 ## Configuration
 
-The backend supports environment variables while retaining the existing local-development defaults:
+The backend supports environment variables while retaining local-development defaults:
 
 ```text
 DB_URL=jdbc:mysql://localhost:3306/disasterdb
@@ -127,13 +135,11 @@ DB_PASSWORD=
 SERVER_PORT=8081
 ```
 
-Do not commit real database passwords, API keys, tokens, or other secrets.
+Never commit real database passwords, API keys, access tokens, or other secrets.
 
 ## Initial Accounts
 
-The application no longer contains hardcoded usernames or passwords in source code.
-
-To create an initial account automatically, set the following environment variables before starting the backend:
+Initial credentials are supplied through environment variables rather than committed to source code:
 
 ```text
 ADMIN_USERNAME=<your-admin-username>
@@ -144,30 +150,26 @@ USER_PASSWORD=<your-user-password>
 
 Passwords are stored using BCrypt hashing.
 
-## How to Run
+## Run Locally
 
-### 1. Prerequisites
+### Prerequisites
 
 - Java 17 or later
 - MySQL
-- Maven, or use the included Maven wrapper
+- Maven, or the included Maven wrapper
 - A modern web browser
 
-### 2. Configure MySQL
-
-Create the `disasterdb` database and verify the database connection settings in `application.properties` or through environment variables.
-
-### 3. Start the backend
+### Start the backend
 
 From the `backend` directory:
 
-**Windows:**
+**Windows**
 
 ```bash
 mvnw.cmd spring-boot:run
 ```
 
-**Linux/macOS:**
+**Linux/macOS**
 
 ```bash
 ./mvnw spring-boot:run
@@ -175,48 +177,50 @@ mvnw.cmd spring-boot:run
 
 The default backend port is `8081`.
 
-### 4. Open the frontend
+### Start the frontend
 
-Open `frontend/index.html` in a browser or serve the `frontend` directory with a local static web server.
-
-Make sure the frontend API configuration points to the running Spring Boot backend.
+Serve the `frontend` directory with a local static web server and ensure the frontend API configuration points to the running Spring Boot backend.
 
 ## Architecture
 
-The current implementation follows a lightweight Spring Boot structure:
-
 ```text
 Browser UI
-    ↓
+    │
+    ▼
 REST Controllers
-    ↓
-Spring Data JPA Repositories
-    ↓
+    │
+    ▼
+Spring Data JPA
+    │
+    ▼
 MySQL Database
 ```
 
-Authentication is handled by `AuthController`, while alert and report operations are exposed through dedicated REST controllers.
+The deployed application separates the frontend and backend into independent Railway services.
+
+## CI/CD
+
+GitHub Actions runs automated backend verification on repository changes. Production deployment is handled through Railway.
 
 ## Security Notes
 
-- Passwords for newly registered users are BCrypt-hashed.
-- Initial credentials are supplied through environment variables rather than committed source code.
-- Database credentials should be supplied through environment variables in non-local environments.
-- This project does not currently implement JWT-based authentication or a full Spring Security authorization configuration.
+- User passwords are BCrypt-hashed.
+- Initial credentials are provided through environment variables.
+- Database credentials are supplied through environment variables in deployed environments.
+- JWT authentication is not currently implemented.
+- Administrative authorization is intentionally lightweight in the current project scope.
 
 ## Future Improvements
 
-Potential next steps include:
-
 - Add a dedicated service layer between controllers and repositories.
-- Add request validation and centralized exception handling.
 - Add automated unit and integration tests.
 - Introduce role-based authorization for administrative operations.
 - Add API documentation with OpenAPI/Swagger.
-- Improve authentication with a complete Spring Security security configuration.
+- Improve authentication with a complete Spring Security configuration.
+- Add production-grade monitoring and structured logging.
 
 ## Author
 
 **Lomesh Pawar**
 
-GitHub: [@lomeshpawar](https://github.com/lomeshpawar)
+GitHub: https://github.com/lomeshpawar
