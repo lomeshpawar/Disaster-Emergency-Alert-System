@@ -1,40 +1,40 @@
 package com.example.demo;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-// This class runs automatically when backend starts
-// It creates default admin and user accounts if they don't exist
+// Creates optional initial accounts from environment variables.
 @Component
 public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public DataInitializer(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
+        createUserFromEnvironment("ADMIN_USERNAME", "ADMIN_PASSWORD", "ADMIN");
+        createUserFromEnvironment("USER_USERNAME", "USER_PASSWORD", "USER");
+    }
 
-        // Create default ADMIN account if not exists
-        if (userRepository.findByUsername("admin").isEmpty()) {
-            User admin = new User();
-            admin.setUsername("admin");
-            admin.setPassword("admin123");
-            admin.setRole("ADMIN");
-            userRepository.save(admin);
-            System.out.println("✅ Default ADMIN account created → username: admin | password: admin123");
+    private void createUserFromEnvironment(String usernameKey, String passwordKey, String role) {
+        String username = System.getenv(usernameKey);
+        String password = System.getenv(passwordKey);
+
+        if (username == null || username.isBlank() || password == null || password.isBlank()) {
+            return;
         }
 
-        // Create default USER account if not exists
-        if (userRepository.findByUsername("user").isEmpty()) {
+        if (userRepository.findByUsername(username).isEmpty()) {
             User user = new User();
-            user.setUsername("user");
-            user.setPassword("user123");
-            user.setRole("USER");
+            user.setUsername(username);
+            user.setPassword(passwordEncoder.encode(password));
+            user.setRole(role);
             userRepository.save(user);
-            System.out.println("✅ Default USER account created → username: user | password: user123");
         }
     }
 }
