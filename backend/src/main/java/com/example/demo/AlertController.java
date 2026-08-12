@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,11 +23,13 @@ public class AlertController {
     }
 
     @PostMapping
-    public Alert addAlert(@RequestBody Alert alert) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public Alert addAlert(@Valid @RequestBody Alert alert) {
         return alertService.createAlert(alert);
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAlert(@PathVariable Long id) {
         alertService.deleteAlert(id);
     }
