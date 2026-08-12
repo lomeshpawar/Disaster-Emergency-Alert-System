@@ -22,6 +22,9 @@ public class ReportService {
     }
 
     public void deleteReport(Long id) {
+        if (!reportRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Report not found with id: " + id);
+        }
         reportRepository.deleteById(id);
     }
 }
