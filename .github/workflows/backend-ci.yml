@@ -2,9 +2,12 @@ name: Backend CI
 
 on:
   push:
-    branches: ["main", "chore/**"]
+    branches: ["main", "chore/**", "refactor/**"]
   pull_request:
     branches: ["main"]
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -26,4 +29,4 @@ jobs:
           cache: maven
 
       - name: Build and test
-        run: ./mvnw -B test
+        run: mvn -B test
