@@ -6,34 +6,27 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/alerts")
-
 @CrossOrigin("*")
 public class AlertController {
 
-    private final AlertRepository repository;
+    private final AlertService alertService;
 
-    public AlertController(AlertRepository repository) {
-        this.repository = repository;
+    public AlertController(AlertService alertService) {
+        this.alertService = alertService;
     }
 
     @GetMapping
-    public List<Alert> getAlerts(){
-
-        return repository.findAll();
-
+    public List<Alert> getAlerts() {
+        return alertService.getAllAlerts();
     }
 
     @PostMapping
-    public Alert addAlert(@RequestBody Alert alert){
-
-        return repository.save(alert);
-
+    public Alert addAlert(@RequestBody Alert alert) {
+        return alertService.createAlert(alert);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteAlert(@PathVariable Long id){
-
-        repository.deleteById(id);
-
+    public void deleteAlert(@PathVariable Long id) {
+        alertService.deleteAlert(id);
     }
 }

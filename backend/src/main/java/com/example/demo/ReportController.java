@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -8,29 +9,24 @@ import java.util.List;
 @CrossOrigin("*")
 public class ReportController {
 
-    private final ReportRepository reportRepository;
+    private final ReportService reportService;
 
-    // Inject ReportRepository using constructor injection
-    public ReportController(ReportRepository reportRepository) {
-        this.reportRepository = reportRepository;
+    public ReportController(ReportService reportService) {
+        this.reportService = reportService;
     }
 
-    // GET /reports - Fetch all submitted reports (for Admin panel)
     @GetMapping
     public List<Report> getAllReports() {
-        return reportRepository.findAll();
+        return reportService.getAllReports();
     }
 
-    // POST /reports - Submit a new emergency report (for Citizens)
     @PostMapping
     public Report submitReport(@RequestBody Report report) {
-        // Save the submitted emergency report to the MySQL database
-        return reportRepository.save(report);
+        return reportService.createReport(report);
     }
 
-    // DELETE /reports/{id} - Delete a report (for Admin)
     @DeleteMapping("/{id}")
     public void deleteReport(@PathVariable Long id) {
-        reportRepository.deleteById(id);
+        reportService.deleteReport(id);
     }
 }
