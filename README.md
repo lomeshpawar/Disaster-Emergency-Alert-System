@@ -6,10 +6,10 @@ A full-stack web application for viewing emergency alerts, submitting disaster r
 
 | Component | URL |
 |---|---|
-| **Frontend** | https://lomeshpawar.github.io/Disaster-Emergency-Alert-System/ |
+| **Frontend** | [Open frontend](https://lomeshpawar.github.io/Disaster-Emergency-Alert-System/) |
+| **Backend API** | [Open backend API](https://disaster-backend-production-1250.up.railway.app) |
 
-**Frontend deployment workflow:** https://github.com/lomeshpawar/Disaster-Emergency-Alert-System/actions/workflows/pages.yml
-| **Backend API** | https://disaster-backend-production-1250.up.railway.app |
+**Frontend deployment workflow:** [View GitHub Actions workflow](https://github.com/lomeshpawar/Disaster-Emergency-Alert-System/actions/workflows/pages.yml)
 
 The frontend is published to GitHub Pages using GitHub Actions. The Spring Boot backend is a separate Railway service; GitHub Pages cannot run Java or host MySQL. Backend-dependent features require the Railway service and its database configuration to be available.
 
