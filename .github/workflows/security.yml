@@ -1,0 +1,27 @@
+name: Security
+
+on:
+  push:
+    branches: ["main", "chore/**", "fix/**"]
+  pull_request:
+    branches: ["main"]
+  schedule:
+    - cron: "17 3 * * 1"
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  secret-scan:
+    name: Scan repository for secrets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Scan for committed secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
