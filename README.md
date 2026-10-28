@@ -69,7 +69,27 @@ CREATE DATABASE disasterdb;
 
 ### 2. Configure the backend
 
-Set your local database URL, username, password, and server port using the backend's supported configuration. Keep real credentials in environment variables or local ignored configuration; do not commit passwords or keys.
+The backend requires explicit database credentials; it no longer falls back to the MySQL `root` account or an empty password. Set either `DB_USERNAME` and `DB_PASSWORD` (preferred), or the compatible `MYSQLUSER` and `MYSQLPASSWORD` variables. You can optionally set `DB_URL`; otherwise the connection URL is assembled from `MYSQLHOST`, `MYSQLPORT`, and `MYSQLDATABASE` (local defaults are `localhost`, `3306`, and `disasterdb`). Missing username or password variables cause configuration resolution to fail instead of silently using unsafe credentials.
+
+Create a dedicated MySQL application user with only the permissions this application needs. For local development, set the variables in your terminal before starting Spring Boot.
+
+**PowerShell example** (replace the sample values locally; never commit real credentials):
+
+```powershell
+$env:DB_URL = "jdbc:mysql://localhost:3306/disasterdb"
+$env:DB_USERNAME = "disaster_app"
+$env:DB_PASSWORD = "replace-with-your-local-password"
+```
+
+**Linux/macOS example:**
+
+```bash
+export DB_URL="jdbc:mysql://localhost:3306/disasterdb"
+export DB_USERNAME="disaster_app"
+export DB_PASSWORD="replace-with-your-local-password"
+```
+
+Keep real credentials in environment variables or local ignored configuration; never commit passwords or keys.
 
 ### 3. Start the backend
 
