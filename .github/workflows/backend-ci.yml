@@ -10,6 +10,19 @@ permissions:
   contents: read
 
 jobs:
+  frontend:
+    name: Frontend JavaScript syntax
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+      - name: Check frontend JavaScript syntax
+        run: node --check frontend/script.js
+
   build:
     name: Build and test backend
     runs-on: ubuntu-latest
