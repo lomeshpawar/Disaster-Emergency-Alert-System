@@ -136,8 +136,10 @@ The Spring Boot API is hosted separately from GitHub Pages. Configure its enviro
 ## Security and limitations
 
 - Never commit database credentials, tokens, private keys, or real `.env` files.
-- Store user passwords using an appropriate password-hashing mechanism.
-- Protect administrative actions with server-side authorization; hiding an admin link in the frontend is not security.
+- Passwords are checked with BCrypt, but the current backend does not yet establish a server-verified authenticated identity for subsequent API requests.
+- Alert creation/deletion and report deletion are not yet protected by server-side role authorization. The admin interface is a prototype, not a security boundary.
+- Do not expose the current backend publicly or use real user/disaster data until [Issue #9 — server-side authentication and authorization](https://github.com/lomeshpawar/Disaster-Emergency-Alert-System/issues/9) is resolved and tested.
+- CORS configuration is not authentication or authorization.
 - Verify backend validation and error handling before production use.
 - This is an academic project, not an official emergency-warning service. Do not rely on it as the sole source for real-time emergency information.
 
