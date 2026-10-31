@@ -113,6 +113,26 @@ Use the port configured by the backend (the documented local default is `8081`).
 
 Serve the `frontend/` directory using Live Server or another static HTTP server. For local development, verify that the API base URL in the frontend points to the local backend; the committed frontend currently references the deployed Railway backend.
 
+## Run backend tests
+
+The backend CI uses the included Maven wrapper and Java 17. From the repository root, run:
+
+**Linux/macOS:**
+
+```bash
+cd backend
+./mvnw -B verify
+```
+
+**Windows PowerShell:**
+
+```powershell
+cd backend
+.\mvnw.cmd -B verify
+```
+
+The Maven `verify` lifecycle compiles the backend and runs its automated tests. A successful test run does not replace the separate server-side authentication and authorization work documented below.
+
 ## Main API areas
 
 | Area | Example endpoints | Purpose |
