@@ -97,7 +97,7 @@ Serve the `frontend/` directory using Live Server or another static HTTP server.
 
 | Area | Example endpoints | Purpose |
 |---|---|---|
-| Authentication | `POST /auth/register`, `POST /auth/login` | Register and authenticate users |
+| Authentication | `POST /auth/register`, `POST /auth/login` | Register users and verify credentials; login does not currently issue a session or token |
 | Alerts | `GET /alerts`, `POST /alerts`, `DELETE /alerts/{id}` | Retrieve and manage alerts |
 | Reports | `GET /reports`, `POST /reports`, `DELETE /reports/{id}` | Retrieve and manage reports |
 
@@ -116,7 +116,9 @@ The Spring Boot API is hosted separately from GitHub Pages. Configure its enviro
 ## Security and limitations
 
 - Never commit database credentials, tokens, private keys, or real `.env` files.
-- Store user passwords using an appropriate password-hashing mechanism.
+- Registration hashes passwords with BCrypt, and login verifies the submitted password against that hash.
+- Login currently returns user/role information but does not establish a server-verifiable session or issue a token. It therefore does not authenticate subsequent API requests.
+- Alert creation/deletion and report listing/deletion do not yet have adequate server-side role/ownership authorization. Do not expose these administrative operations to untrusted users until this is implemented and tested.
 - Protect administrative actions with server-side authorization; hiding an admin link in the frontend is not security.
 - Verify backend validation and error handling before production use.
 - This is an academic project, not an official emergency-warning service. Do not rely on it as the sole source for real-time emergency information.
