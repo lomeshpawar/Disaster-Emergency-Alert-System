@@ -78,7 +78,7 @@ From the `backend/` directory:
 **Windows**
 
 ```powershell
-.\\mvnw.cmd spring-boot:run
+.\mvnw.cmd spring-boot:run
 ```
 
 **Linux/macOS**
