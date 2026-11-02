@@ -44,3 +44,18 @@ jobs:
 
       - name: Build and test
         run: sh ./mvnw -B verify
+
+  container-build:
+    name: Build backend container and verify non-root user
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Build backend image
+        run: docker build --file backend/Dockerfile --tag disaster-emergency-alert-backend:ci backend
+
+      - name: Verify configured runtime user
+        run: |
+          image_user="$(docker image inspect disaster-emergency-alert-backend:ci --format '{{.Config.User}}')"
+          test "$image_user" = "10001:10001"
