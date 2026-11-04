@@ -46,7 +46,8 @@ Disaster-Emergency-Alert-System/
 ├── database.sql              # Database initialization script
 ├── .github/workflows/
 │   ├── pages.yml              # Publish frontend to GitHub Pages
-│   └── backend-ci.yml         # Backend CI checks
+│   ├── backend-ci.yml         # Backend and frontend validation
+│   └── security.yml           # Scheduled and pull-request secret scanning
 └── README.md
 ```
 
