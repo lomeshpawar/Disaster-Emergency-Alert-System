@@ -119,7 +119,7 @@ The Spring Boot API is hosted separately from GitHub Pages. Configure its enviro
 - Never commit database credentials, tokens, private keys, or real `.env` files.
 - Registration hashes passwords with BCrypt, and login verifies the submitted password against that hash.
 - Login currently returns user/role information but does not establish a server-verifiable session or issue a token. It therefore does not authenticate subsequent API requests.
-- Alert creation/deletion and report listing/deletion do not yet have adequate server-side role/ownership authorization. Do not expose these administrative operations to untrusted users until this is implemented and tested.
+- Alert creation/deletion and report listing/deletion do not yet have adequate server-side role/ownership authorization. In particular, the current unauthenticated `GET /reports` endpoint returns all report records, including submitter names and messages. Do not use real personal or incident data or expose this endpoint to untrusted users until an explicit access policy, response-field filtering, and server-side authorization are implemented and tested.
 - Protect administrative actions with server-side authorization; hiding an admin link in the frontend is not security.
 - Verify backend validation and error handling before production use.
 - This is an academic project, not an official emergency-warning service. Do not rely on it as the sole source for real-time emergency information.
