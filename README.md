@@ -46,7 +46,8 @@ Disaster-Emergency-Alert-System/
 ├── database.sql              # Database initialization script
 ├── .github/workflows/
 │   ├── pages.yml              # Publish frontend to GitHub Pages
-│   └── backend-ci.yml         # Backend CI checks
+│   ├── backend-ci.yml         # Backend and frontend validation
+│   └── security.yml           # Scheduled and pull-request secret scanning
 └── README.md
 ```
 
@@ -69,7 +70,7 @@ CREATE DATABASE disasterdb;
 
 ### 2. Configure the backend
 
-The backend requires `DB_USERNAME` and `DB_PASSWORD`; it does not fall back to the MySQL `root` account, an empty password, or legacy credential aliases. You can optionally set `DB_URL`; otherwise the connection URL is assembled from `MYSQLHOST`, `MYSQLPORT`, and `MYSQLDATABASE` (local defaults are `localhost`, `3306`, and `disasterdb`). If either required credential is missing, required-placeholder resolution fails instead of silently selecting unsafe credentials.
+The backend requires `DB_USERNAME` and `DB_PASSWORD`; it does not fall back to the MySQL `root` account, an empty password, or legacy credential aliases. You can optionally set `DB_URL`; otherwise the connection URL is assembled from `MYSQLHOST`, `MYSQLPORT`, and `MYSQLDATABASE` (local defaults are `localhost`, `3306`, and `disasterdb`). If either required credential is missing, Spring's required-placeholder resolution fails instead of silently selecting unsafe credentials.
 
 Create a dedicated MySQL application user with only the permissions this application needs. For local development, set the variables in your terminal before starting Spring Boot.
 
@@ -113,35 +114,54 @@ Use the port configured by the backend (the documented local default is `8081`).
 
 Serve the `frontend/` directory using Live Server or another static HTTP server. For local development, verify that the API base URL in the frontend points to the local backend; the committed frontend currently references the deployed Railway backend.
 
-## Run backend tests
-
-The backend CI uses the included Maven wrapper and Java 17. From the repository root, run:
-
-**Linux/macOS:**
-
-```bash
-cd backend
-./mvnw -B verify
-```
-
-**Windows PowerShell:**
-
-```powershell
-cd backend
-.\mvnw.cmd -B verify
-```
-
-The Maven `verify` lifecycle compiles the backend and runs its automated tests. A successful test run does not replace the separate server-side authentication and authorization work documented below.
-
 ## Main API areas
 
 | Area | Example endpoints | Purpose |
 |---|---|---|
-| Authentication | `POST /auth/register`, `POST /auth/login` | Register and authenticate users |
+| Authentication | `POST /auth/register`, `POST /auth/login` | Register users and verify credentials; login does not currently issue a session or token |
 | Alerts | `GET /alerts`, `POST /alerts`, `DELETE /alerts/{id}` | Retrieve and manage alerts |
 | Reports | `GET /reports`, `POST /reports`, `DELETE /reports/{id}` | Retrieve and manage reports |
 
 Verify exact request fields and authorization behavior against the current backend source before integrating another client.
+
+## Automated tests and CI validation
+
+The `.github/workflows/backend-ci.yml` workflow runs the following checks for pull requests targeting `main` and configured pushes:
+
+**Frontend JavaScript syntax (Node.js 22):**
+
+Run from the repository root:
+
+```bash
+node --check frontend/script.js
+```
+
+**Backend build and tests (Java 17 / Maven):**
+
+Run from the repository root:
+
+```bash
+cd backend
+sh ./mvnw -B verify
+```
+
+On Windows PowerShell, run the wrapper from `backend/` with:
+
+```powershell
+.\mvnw.cmd -B verify
+```
+
+**Container build and non-root configuration check:**
+
+The workflow builds the backend Docker image and verifies that its configured runtime user is `10001:10001`:
+
+```bash
+docker build --file backend/Dockerfile --tag disaster-emergency-alert-backend:ci backend
+image_user="$(docker image inspect disaster-emergency-alert-backend:ci --format '{{.Config.User}}')"
+test "$image_user" = "10001:10001"
+```
+
+These checks validate frontend syntax, the Maven verification lifecycle, and the container image's configured user. The workflow does **not** start a MySQL service or provide full live API/database integration coverage. Passing CI also does not establish that authentication, authorization, or report privacy controls are complete. Check the [GitHub Actions runs](https://github.com/lomeshpawar/Disaster-Emergency-Alert-System/actions) for the result on the commit being reviewed.
 
 ## Deployment
 
@@ -156,10 +176,10 @@ The Spring Boot API is hosted separately from GitHub Pages. Configure its enviro
 ## Security and limitations
 
 - Never commit database credentials, tokens, private keys, or real `.env` files.
-- Passwords are checked with BCrypt, but the current backend does not yet establish a server-verified authenticated identity for subsequent API requests.
-- Alert creation/deletion and report deletion are not yet protected by server-side role authorization. The admin interface is a prototype, not a security boundary.
-- Do not expose the current backend publicly or use real user/disaster data until [Issue #9 — server-side authentication and authorization](https://github.com/lomeshpawar/Disaster-Emergency-Alert-System/issues/9) is resolved and tested.
-- CORS configuration is not authentication or authorization.
+- Registration hashes passwords with BCrypt, and login verifies the submitted password against that hash.
+- Login currently returns user/role information but does not establish a server-verifiable session or issue a token. It therefore does not authenticate subsequent API requests.
+- Alert creation/deletion and report listing/deletion do not yet have adequate server-side role/ownership authorization. In particular, the current unauthenticated `GET /reports` endpoint returns all report records, including submitter names and messages. Do not use real personal or incident data or expose this endpoint to untrusted users until an explicit access policy, response-field filtering, and server-side authorization are implemented and tested.
+- Protect administrative actions with server-side authorization; hiding an admin link in the frontend is not security.
 - Verify backend validation and error handling before production use.
 - This is an academic project, not an official emergency-warning service. Do not rely on it as the sole source for real-time emergency information.
 
