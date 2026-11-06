@@ -104,6 +104,45 @@ Serve the `frontend/` directory using Live Server or another static HTTP server.
 
 Verify exact request fields and authorization behavior against the current backend source before integrating another client.
 
+## Automated tests and CI validation
+
+The `.github/workflows/backend-ci.yml` workflow runs the following checks for pull requests targeting `main` and configured pushes:
+
+**Frontend JavaScript syntax (Node.js 22):**
+
+Run from the repository root:
+
+```bash
+node --check frontend/script.js
+```
+
+**Backend build and tests (Java 17 / Maven):**
+
+Run from the repository root:
+
+```bash
+cd backend
+sh ./mvnw -B verify
+```
+
+On Windows PowerShell, run the wrapper from `backend/` with:
+
+```powershell
+.\mvnw.cmd -B verify
+```
+
+**Container build and non-root configuration check:**
+
+The workflow builds the backend Docker image and verifies that its configured runtime user is `10001:10001`:
+
+```bash
+docker build --file backend/Dockerfile --tag disaster-emergency-alert-backend:ci backend
+image_user="$(docker image inspect disaster-emergency-alert-backend:ci --format '{{.Config.User}}')"
+test "$image_user" = "10001:10001"
+```
+
+These checks validate frontend syntax, the Maven verification lifecycle, and the container image's configured user. The workflow does **not** start a MySQL service or provide full live API/database integration coverage. Passing CI also does not establish that authentication, authorization, or report privacy controls are complete. Check the [GitHub Actions runs](https://github.com/lomeshpawar/Disaster-Emergency-Alert-System/actions) for the result on the commit being reviewed.
+
 ## Deployment
 
 ### Frontend
