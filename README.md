@@ -90,7 +90,7 @@ export DB_USERNAME="disaster_app"
 export DB_PASSWORD="replace-with-your-local-password"
 ```
 
-Keep real credentials in environment variables or local ignored configuration; never commit passwords or keys.
+The repository includes `.env.example` as a reference template. Spring Boot does not load `.env` files automatically: copy the values into your shell, IDE run configuration, or hosting-platform environment settings before starting the backend. Keep real credentials in environment variables or local ignored configuration; never commit passwords or keys.
 
 ### 3. Start the backend
 
