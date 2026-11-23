@@ -19,3 +19,4 @@ Thumbs.db
 # Local environment/configuration
 .env
 .env.*
+!.env.example
